@@ -106,6 +106,9 @@ class Sentence():
         Returns the set of all cells in self.cells known to be mines.
         """
         #Both will depend on the count, when 0 all safe when as many as cells then all mines, anything in between needs to be calculated
+        #Only way I can code in the knowledge of mine existence is with the count, 
+        #So I can reduce the count and create new sentences with count 0 if I know that
+        #They are safe
         if len(self.cells) == self.count:
             return self.cells
         
