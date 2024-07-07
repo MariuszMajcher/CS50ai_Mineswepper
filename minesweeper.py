@@ -199,6 +199,8 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        # When spots are marked with mines or safes, they disapear, maybe would be usefull to turn this information in to new sentences
+        # Currently the moves that are marked safe are not necesarily safe, mine marking is not accurate, there must be some sort of mistake
         self.moves_made.add(cell)
         self.mark_safe(cell)
         cells = set()
@@ -217,18 +219,29 @@ class MinesweeperAI():
         # Dont want to create to many, and not repeating 
         print("new iteration")
         self.knowledge.append(Sentence(cells, count))
-        for se in self.knowledge:
+        # for se in self.knowledge:
 
-            print(se)
+        #     print(se)
+        print("safes")
+        print(self.safes)
+        print("mines")
+        print(self.mines)
         for sentence in self.knowledge:
             safe_moves = sentence.known_safes()
+            mines = sentence.known_mines()
             if safe_moves:
                 for move in safe_moves:
                     self.safes.add(move)
+            if mines:
+                for mine in mines:
+                    self.mines.add(mine)
        
         for sentence in self.knowledge:
             for move in self.safes:
                 sentence.mark_safe(move)
+            for mine in self.mines:
+                sentence.mark_mine(mine)        
+
         for sentence in self.knowledge:
               if sentence.cells == set():
                     self.knowledge.remove(sentence)            
