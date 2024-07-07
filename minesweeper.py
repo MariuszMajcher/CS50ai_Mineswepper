@@ -229,7 +229,7 @@ class MinesweeperAI():
             for move in self.safes:
                 sentence.mark_safe(move)
         
-        #This removes copies
+        #This does not remove copies it thtows an error as the self.knowledge is not a list, it contains objects, Sentences
         knowledge = set(self.knowledge)
         self.knowledge = list(knowledge)
 
