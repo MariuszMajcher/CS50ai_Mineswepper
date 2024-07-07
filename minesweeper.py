@@ -109,6 +109,8 @@ class Sentence():
         #Only way I can code in the knowledge of mine existence is with the count, 
         #So I can reduce the count and create new sentences with count 0 if I know that
         #They are safe
+        #Sentence does expect the cells, not single cell , will need to create a way to pass on
+        #Cells that are safe unsafe, as part of the knowledge,
         if len(self.cells) == self.count:
             return self.cells
         
@@ -120,20 +122,26 @@ class Sentence():
         """
         if self.count == 0:
             return self.cells
+        else:
+            return None
 
     def mark_mine(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
-        raise NotImplementedError
+        #If i remove a cell will it mark it with flag?
+        if cell in self.cells:
+            self.cells.remove(cell)
+            self.count -= 1
 
     def mark_safe(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
-        raise NotImplementedError
+        if cell in self.cells:
+            self.cells.remove(cell)
 
 
 class MinesweeperAI():
@@ -192,10 +200,32 @@ class MinesweeperAI():
         """
         self.moves_made.add(cell)
         self.mark_safe(cell)
-        self.knowledge.append(Sentence(cell, count))
+        cells = set()
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+
+                # Ignore the cell itself
+                if (i, j) == cell:
+                    continue
+
+                # Update count if cell in bounds and is mine
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    if (i,j) not in self.safes and (i,j) not in self.mines:
+                        cells.add((i,j))
+        # How to create a difference of the sentences, 
+        # Dont want to create to many, and not repeating 
+        print("new iteration")
+        self.knowledge.append(Sentence(cells, count))
+        for se in self.knowledge:
+
+            print(se)
         for sentence in self.knowledge:
-            self.mines.add(sentence.known_mines())
-            self.safes.add(sentence.known_safes())
+            safe_moves = sentence.known_safes()
+            if safe_moves:
+                for move in safe_moves:
+                    self.safes.add(move)
+                    sentence.mark_safe(move)
+                
 
     def make_safe_move(self):
         """
@@ -206,7 +236,15 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+        if len(self.safes) > 0:
+            moves = (self.safes - self.moves_made)
+            if len(moves) > 0:
+                choice = random.choice(list(moves))
+                if choice:
+                    return choice
+                else:
+                    return None
+            return None
 
     def make_random_move(self):
         """
@@ -215,4 +253,13 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+        board = set()
+        for i in range(self.width):
+            for j in range(self.height):
+                board.add((i,j))
+        not_mine = (board - self.mines)
+        choice = random.choice(list(not_mine))
+        if choice:
+            return choice
+        else:
+            return None
