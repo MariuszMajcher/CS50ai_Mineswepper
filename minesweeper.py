@@ -224,7 +224,10 @@ class MinesweeperAI():
             if safe_moves:
                 for move in safe_moves:
                     self.safes.add(move)
-                    sentence.mark_safe(move)
+       
+        for sentence in self.knowledge:
+            for move in self.safes:
+                sentence.mark_safe(move)
                 
 
     def make_safe_move(self):
