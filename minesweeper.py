@@ -100,7 +100,7 @@ class Sentence():
 
     def __str__(self):
         return f"{self.cells} = {self.count}"
-
+    
     def known_mines(self):
         """
         Returns the set of all cells in self.cells known to be mines.
@@ -183,6 +183,7 @@ class MinesweeperAI():
         for sentence in self.knowledge:
             sentence.mark_safe(cell)
 
+
     def add_knowledge(self, cell, count):
         """
         Called when the Minesweeper board tells us, for a given
@@ -228,10 +229,10 @@ class MinesweeperAI():
         for sentence in self.knowledge:
             for move in self.safes:
                 sentence.mark_safe(move)
-        
-        #This does not remove copies it thtows an error as the self.knowledge is not a list, it contains objects, Sentences
-        knowledge = set(self.knowledge)
-        self.knowledge = list(knowledge)
+        for sentence in self.knowledge:
+              if sentence.cells == set():
+                    self.knowledge.remove(sentence)            
+       
 
     def make_safe_move(self):
         """
