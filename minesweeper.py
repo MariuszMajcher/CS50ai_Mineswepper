@@ -228,7 +228,10 @@ class MinesweeperAI():
         for sentence in self.knowledge:
             for move in self.safes:
                 sentence.mark_safe(move)
-                
+        
+        #This removes copies
+        knowledge = set(self.knowledge)
+        self.knowledge = list(knowledge)
 
     def make_safe_move(self):
         """
