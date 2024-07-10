@@ -90,14 +90,16 @@ class Sentence():
     A sentence consists of a set of board cells,
     and a count of the number of those cells which are mines.
     """
-
-    def __init__(self, cells, count):
+    # For testing purposes, will add the middle cell, that will help me to undersand the board better
+    def __init__(self, cells, count, middle_cell):
         self.cells = set(cells)
         self.count = count
+        self.mc = middle_cell
 
     def __eq__(self, other):
         return self.cells == other.cells and self.count == other.count
-
+    
+    #TODO: THIS NEEDS TO CHANGE BACK, NOW ADDING THE MIDDLE CELL TO BE PRINTED OUT AS WELL AND ADDING SOME COLOR
     def __str__(self):
         return f"{self.cells} = {self.count}"
     
@@ -134,6 +136,11 @@ class Sentence():
         if cell in self.cells:
             self.cells.remove(cell)
             self.count -= 1
+            # It should remove this sentence if it discovers a mine that is last mine in it
+            # I think that now it removes it before it can add mines to the db
+            if self.count == 0:
+                for cell in self.cells:
+                    self.cells.remove
 
     def mark_safe(self, cell):
         """
@@ -218,10 +225,10 @@ class MinesweeperAI():
         # How to create a difference of the sentences, 
         # Dont want to create to many, and not repeating 
         print("new iteration")
-        self.knowledge.append(Sentence(cells, count))
-        # for se in self.knowledge:
+        self.knowledge.append(Sentence(cells, count, cell))
+        for se in self.knowledge:
 
-        #     print(se)
+            print(se)
         print("safes")
         print(self.safes)
         print("mines")
