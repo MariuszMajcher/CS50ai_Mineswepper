@@ -213,6 +213,11 @@ class MinesweeperAI():
         # Dont want to create to many, and not repeating 
         print("new iteration")
         self.knowledge.append(Sentence(cells, count, cell))
+        # TODO: I see now what is left is to create information from the exisiting sentences
+        # Sentences currently dont`t have knowledge of each other, need to do a check on each sentence
+        # Actually there aren`t that many on each iteration, could try to create new sentences each time
+        # there is something to add, but only then, don`t want to litter the knowledge db 
+        # with unnescesary sentences`
         for se in self.knowledge:
 
             print(se)
