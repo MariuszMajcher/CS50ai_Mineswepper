@@ -101,18 +101,12 @@ class Sentence():
     
     #TODO: THIS NEEDS TO CHANGE BACK, NOW ADDING THE MIDDLE CELL TO BE PRINTED OUT AS WELL AND ADDING SOME COLOR
     def __str__(self):
-        return f"{self.cells} = {self.count}"
+        return f"\033[32m{self.mc}\033[0m -> {self.cells} = {self.count}"
     
     def known_mines(self):
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        #Both will depend on the count, when 0 all safe when as many as cells then all mines, anything in between needs to be calculated
-        #Only way I can code in the knowledge of mine existence is with the count, 
-        #So I can reduce the count and create new sentences with count 0 if I know that
-        #They are safe
-        #Sentence does expect the cells, not single cell , will need to create a way to pass on
-        #Cells that are safe unsafe, as part of the knowledge,
         if len(self.cells) == self.count:
             return self.cells
         
@@ -136,11 +130,7 @@ class Sentence():
         if cell in self.cells:
             self.cells.remove(cell)
             self.count -= 1
-            # It should remove this sentence if it discovers a mine that is last mine in it
-            # I think that now it removes it before it can add mines to the db
-            if self.count == 0:
-                for cell in self.cells:
-                    self.cells.remove
+            # Seems like count does not change
 
     def mark_safe(self, cell):
         """
@@ -206,8 +196,6 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        # When spots are marked with mines or safes, they disapear, maybe would be usefull to turn this information in to new sentences
-        # Currently the moves that are marked safe are not necesarily safe, mine marking is not accurate, there must be some sort of mistake
         self.moves_made.add(cell)
         self.mark_safe(cell)
         cells = set()
@@ -220,8 +208,7 @@ class MinesweeperAI():
 
                 # Update count if cell in bounds and is mine
                 if 0 <= i < self.height and 0 <= j < self.width:
-                    if (i,j) not in self.safes and (i,j) not in self.mines:
-                        cells.add((i,j))
+                    cells.add((i,j))
         # How to create a difference of the sentences, 
         # Dont want to create to many, and not repeating 
         print("new iteration")
