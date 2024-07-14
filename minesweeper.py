@@ -243,7 +243,15 @@ class MinesweeperAI():
 
         for sentence in self.knowledge:
               if sentence.cells == set():
-                    self.knowledge.remove(sentence)            
+                    self.knowledge.remove(sentence)  
+
+        for sentence in self.knowledge:
+            for other_sentence in self.knowledge:
+                if sentence != other_sentence:
+                    if sentence.cells.issubset(other_sentence.cells):
+                        new_cells= sentence.cells - other_sentence.cells
+                        count = sentence.count - other_sentence.count
+                        self.knowledge.append(Sentence(new_cells, count, sentence.mc))
        
 
     def make_safe_move(self):
