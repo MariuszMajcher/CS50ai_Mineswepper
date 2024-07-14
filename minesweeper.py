@@ -91,18 +91,17 @@ class Sentence():
     and a count of the number of those cells which are mines.
     """
     # For testing purposes, will add the middle cell, that will help me to undersand the board better
-    def __init__(self, cells, count, middle_cell, checked):
+    def __init__(self, cells, count):
         self.cells = set(cells)
         self.count = count
-        self.mc = middle_cell
-        self.checked = checked
+       
 
     def __eq__(self, other):
         return self.cells == other.cells and self.count == other.count
     
     #TODO: THIS NEEDS TO CHANGE BACK, NOW ADDING THE MIDDLE CELL TO BE PRINTED OUT AS WELL AND ADDING SOME COLOR
     def __str__(self):
-        return f"\033[32m{self.mc}\033[0m -> {self.cells} = {self.count}"
+        return f"{self.cells} = {self.count}"
     
     def known_mines(self):
         """
@@ -110,6 +109,8 @@ class Sentence():
         """
         if len(self.cells) == self.count:
             return self.cells
+        else:
+            return set()
         
         
     
@@ -120,15 +121,7 @@ class Sentence():
         if self.count == 0:
             return self.cells
         else:
-            return None
-    
-    def mark_checked(self):
-        if self.checked:
-            self.checked = True
-    
-    def mark_unchecked(self):
-        if self.checked:
-            self.checked = False
+            return set()
 
     def mark_mine(self, cell):
         """
@@ -222,7 +215,7 @@ class MinesweeperAI():
         # How to create a difference of the sentences, 
         # Dont want to create to many, and not repeating 
         print("new iteration")
-        self.knowledge.append(Sentence(cells, count, cell, False))
+        self.knowledge.append(Sentence(cells, count))
         # TODO: I see now what is left is to create information from the exisiting sentences
         # Sentences currently dont`t have knowledge of each other, need to do a check on each sentence
         # Actually there aren`t that many on each iteration, could try to create new sentences each time
@@ -246,7 +239,7 @@ class MinesweeperAI():
                     self.mines.add(mine)
        
         for sentence in self.knowledge:
-            sentence.mark_unchecked()
+           
             for move in self.safes:
                 sentence.mark_safe(move)
             for mine in self.mines:
@@ -257,15 +250,15 @@ class MinesweeperAI():
                     self.knowledge.remove(sentence)  
 
         for sentence in self.knowledge:
-            if not sentence.checked and sentence.cells != set():
+            if sentence.cells != set():
                 for other_sentence in self.knowledge:
-                    sentence.mark_checked()
+            
                     if sentence != other_sentence:
                         if sentence.cells.issubset(other_sentence.cells):
                             print(sentence.cells)
                             new_cells= sentence.cells - other_sentence.cells
                             count = sentence.count - other_sentence.count
-                            self.knowledge.append(Sentence(new_cells, count, sentence.mc, False))
+                            self.knowledge.append(Sentence(new_cells, count))
        
 
     def make_safe_move(self):
