@@ -91,10 +91,11 @@ class Sentence():
     and a count of the number of those cells which are mines.
     """
     # For testing purposes, will add the middle cell, that will help me to undersand the board better
-    def __init__(self, cells, count, middle_cell):
+    def __init__(self, cells, count, middle_cell, checked):
         self.cells = set(cells)
         self.count = count
         self.mc = middle_cell
+        self.checked = checked
 
     def __eq__(self, other):
         return self.cells == other.cells and self.count == other.count
@@ -120,6 +121,14 @@ class Sentence():
             return self.cells
         else:
             return None
+    
+    def mark_checked(self):
+        if self.checked:
+            self.checked = True
+    
+    def mark_unchecked(self):
+        if self.checked:
+            self.checked = False
 
     def mark_mine(self, cell):
         """
@@ -170,6 +179,7 @@ class MinesweeperAI():
         self.mines.add(cell)
         for sentence in self.knowledge:
             sentence.mark_mine(cell)
+    
 
     def mark_safe(self, cell):
         """
@@ -212,7 +222,7 @@ class MinesweeperAI():
         # How to create a difference of the sentences, 
         # Dont want to create to many, and not repeating 
         print("new iteration")
-        self.knowledge.append(Sentence(cells, count, cell))
+        self.knowledge.append(Sentence(cells, count, cell, False))
         # TODO: I see now what is left is to create information from the exisiting sentences
         # Sentences currently dont`t have knowledge of each other, need to do a check on each sentence
         # Actually there aren`t that many on each iteration, could try to create new sentences each time
@@ -236,6 +246,7 @@ class MinesweeperAI():
                     self.mines.add(mine)
        
         for sentence in self.knowledge:
+            sentence.mark_unchecked()
             for move in self.safes:
                 sentence.mark_safe(move)
             for mine in self.mines:
@@ -246,12 +257,15 @@ class MinesweeperAI():
                     self.knowledge.remove(sentence)  
 
         for sentence in self.knowledge:
-            for other_sentence in self.knowledge:
-                if sentence != other_sentence:
-                    if sentence.cells.issubset(other_sentence.cells):
-                        new_cells= sentence.cells - other_sentence.cells
-                        count = sentence.count - other_sentence.count
-                        self.knowledge.append(Sentence(new_cells, count, sentence.mc))
+            if not sentence.checked and sentence.cells != set():
+                for other_sentence in self.knowledge:
+                    sentence.mark_checked()
+                    if sentence != other_sentence:
+                        if sentence.cells.issubset(other_sentence.cells):
+                            print(sentence.cells)
+                            new_cells= sentence.cells - other_sentence.cells
+                            count = sentence.count - other_sentence.count
+                            self.knowledge.append(Sentence(new_cells, count, sentence.mc, False))
        
 
     def make_safe_move(self):
