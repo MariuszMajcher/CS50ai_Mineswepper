@@ -99,7 +99,6 @@ class Sentence():
     def __eq__(self, other):
         return self.cells == other.cells and self.count == other.count
     
-    #TODO: THIS NEEDS TO CHANGE BACK, NOW ADDING THE MIDDLE CELL TO BE PRINTED OUT AS WELL AND ADDING SOME COLOR
     def __str__(self):
         return f"{self.cells} = {self.count}"
     
@@ -216,11 +215,7 @@ class MinesweeperAI():
         # Dont want to create to many, and not repeating 
         print("new iteration")
         self.knowledge.append(Sentence(cells, count))
-        # TODO: I see now what is left is to create information from the exisiting sentences
-        # Sentences currently dont`t have knowledge of each other, need to do a check on each sentence
-        # Actually there aren`t that many on each iteration, could try to create new sentences each time
-        # there is something to add, but only then, don`t want to litter the knowledge db 
-        # with unnescesary sentences`
+       
         for se in self.knowledge:
 
             print(se)
@@ -249,6 +244,10 @@ class MinesweeperAI():
               if sentence.cells == set():
                     self.knowledge.remove(sentence)  
 
+        # This will have to check only for situations where the subset is big part of other set, not sure how to 
+        # create it, because it will remove mine from new subset leaving it at zero, marking it as safe, 
+        # needs to do this magic only when the inference is correct, so when the subset is complete part of other set
+        # which I believe is actually happening now, so maybe after all it is correct?!
         for sentence in self.knowledge:
             if sentence.cells != set():
                 for other_sentence in self.knowledge:
