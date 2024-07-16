@@ -249,6 +249,7 @@ class MinesweeperAI():
         while not finished:
             finished = True
             for sentence in self.knowledge:
+
                 if sentence.cells != set():
                     for other_sentence in self.knowledge:
                 
@@ -256,7 +257,8 @@ class MinesweeperAI():
                             if sentence.cells.issubset(other_sentence.cells):
                                 print(sentence.cells)
                                 new_cells= sentence.cells - other_sentence.cells
-                                if new_cells not in self.knowledge:
+                                all_cells = [item.cells for item in self.knowledge  ]
+                                if new_cells not in all_cells:
                                     finished = False
                                     count = sentence.count - other_sentence.count
                                     self.knowledge.append(Sentence(new_cells, count))
