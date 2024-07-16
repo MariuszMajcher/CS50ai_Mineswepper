@@ -244,10 +244,7 @@ class MinesweeperAI():
               if sentence.cells == set():
                     self.knowledge.remove(sentence)  
 
-        # This will have to check only for situations where the subset is big part of other set, not sure how to 
-        # create it, because it will remove mine from new subset leaving it at zero, marking it as safe, 
-        # needs to do this magic only when the inference is correct, so when the subset is complete part of other set
-        # which I believe is actually happening now, so maybe after all it is correct?!
+        # Would be good to create a while loop that will keep running till there is no new inference to be made, question is how to make it so it will not be infinite
         for sentence in self.knowledge:
             if sentence.cells != set():
                 for other_sentence in self.knowledge:
