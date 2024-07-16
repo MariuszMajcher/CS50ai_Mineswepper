@@ -263,22 +263,22 @@ class MinesweeperAI():
                                     count = sentence.count - other_sentence.count
                                     new_sentence = Sentence(new_cells, count)
                                     self.knowledge.append(new_sentence)
-            for sentence in self.knowledge:
-                safe_moves = sentence.known_safes()
-                mines = sentence.known_mines()
-                if safe_moves:
-                    for move in safe_moves:
-                        self.safes.add(move)
-                if mines:
-                    for mine in mines:
-                        self.mines.add(mine)
-        
-            for sentence in self.knowledge:
+                for sentence in self.knowledge:
+                    safe_moves = sentence.known_safes()
+                    mines = sentence.known_mines()
+                    if safe_moves:
+                        for move in safe_moves:
+                            self.safes.add(move)
+                    if mines:
+                        for mine in mines:
+                            self.mines.add(mine)
             
-                for move in self.safes:
-                    sentence.mark_safe(move)
-                for mine in self.mines:
-                    sentence.mark_mine(mine) 
+                for sentence in self.knowledge:
+                
+                    for move in self.safes:
+                        sentence.mark_safe(move)
+                    for mine in self.mines:
+                        sentence.mark_mine(mine) 
        
 
     def make_safe_move(self):
