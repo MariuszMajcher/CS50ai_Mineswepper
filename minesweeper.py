@@ -261,7 +261,24 @@ class MinesweeperAI():
                                 if new_cells not in all_cells:
                                     finished = False
                                     count = sentence.count - other_sentence.count
-                                    self.knowledge.append(Sentence(new_cells, count))
+                                    new_sentence = Sentence(new_cells, count)
+                                    self.knowledge.append(new_sentence)
+            for sentence in self.knowledge:
+                safe_moves = sentence.known_safes()
+                mines = sentence.known_mines()
+                if safe_moves:
+                    for move in safe_moves:
+                        self.safes.add(move)
+                if mines:
+                    for mine in mines:
+                        self.mines.add(mine)
+        
+            for sentence in self.knowledge:
+            
+                for move in self.safes:
+                    sentence.mark_safe(move)
+                for mine in self.mines:
+                    sentence.mark_mine(mine) 
        
 
     def make_safe_move(self):
@@ -294,7 +311,7 @@ class MinesweeperAI():
         for i in range(self.width):
             for j in range(self.height):
                 board.add((i,j))
-        not_mine = (board - self.mines)
+        not_mine = (board - self.mines - self.moves_made)
         choice = random.choice(list(not_mine))
         if choice:
             return choice
