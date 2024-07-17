@@ -244,73 +244,41 @@ class MinesweeperAI():
               if sentence.cells == set():
                     self.knowledge.remove(sentence)  
 
-        # This way does not guarantee discovery of every possible infered information, need to check why
+        # Would be good to create a while loop that will keep running till there is no new inference to be made, question is how to make it so it will not be infinite
         finished = False
         while not finished:
             finished = True
-
-            # Check all the knowledge
             for sentence in self.knowledge:
 
-                # Proceed only if the knowledge isnt empty
                 if sentence.cells != set():
                     for other_sentence in self.knowledge:
-
-                        # Proceed only if two knowledges are different
+                
                         if sentence != other_sentence:
-
-                            # Proceed only if the other sentence is completely within first sentence
                             if sentence.cells.issubset(other_sentence.cells):
                                 print(sentence.cells)
                                 new_cells= sentence.cells - other_sentence.cells
-                                all_cells = [item.cells for item in self.knowledge]
-
-                                # Proceed only if the new cells are not already in knowledge, then add sentence to knowledge, and check again
+                                all_cells = [item.cells for item in self.knowledge  ]
                                 if new_cells not in all_cells:
                                     finished = False
                                     count = sentence.count - other_sentence.count
                                     new_sentence = Sentence(new_cells, count)
                                     self.knowledge.append(new_sentence)
-                                    need_checking = True
-
-                                    # Keep on checking till not change has been made, if anything changed rerun again
-                                    while need_checking:
-                                        need_checking = False
-                                       
-                                        # TODO: Maybe will be better if I create an empty knowledge append to it new senteces and then replace the original
-                                        for sentence in self.knowledge:
-                                            safe_moves = sentence.known_safes()
-                                            mines = sentence.known_mines()
-                                            if safe_moves and safe_moves not in self.safes:
-                                                for move in safe_moves:
-                                                    need_checking = True
-                                                    self.safes.add(move)
-                                            if mines and mines not in self.mines:
-                                                for mine in mines:
-                                                    need_checking = True
-                                                    self.mines.add(mine)
-                                
-                                        for sentence in self.knowledge:
-                                        
-                                            for move in self.safes:
-                                                sentence.mark_safe(move)
-                                            for mine in self.mines:
-                                                sentence.mark_mine(mine)        
-                                        
-                                         for sentence in self.knowledge:
-                                            safe_moves = sentence.known_safes()
-                                            mines = sentence.known_mines()
-                                            if safe_moves and safe_moves not in self.safes:
-                                                for move in safe_moves:
-                                                    need_checking = True
-                                                    self.safes.add(move)
-                                            if mines and mines not in self.mines:
-                                                for mine in mines:
-                                                    need_checking = True
-                                                    self.mines.add(mine)
-
-
-              
+                for sentence in self.knowledge:
+                    safe_moves = sentence.known_safes()
+                    mines = sentence.known_mines()
+                    if safe_moves:
+                        for move in safe_moves:
+                            self.safes.add(move)
+                    if mines:
+                        for mine in mines:
+                            self.mines.add(mine)
+            
+                for sentence in self.knowledge:
+                
+                    for move in self.safes:
+                        sentence.mark_safe(move)
+                    for mine in self.mines:
+                        sentence.mark_mine(mine) 
        
 
     def make_safe_move(self):
