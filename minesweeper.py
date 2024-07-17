@@ -244,7 +244,7 @@ class MinesweeperAI():
               if sentence.cells == set():
                     self.knowledge.remove(sentence)  
 
-        # Would be good to create a while loop that will keep running till there is no new inference to be made, question is how to make it so it will not be infinite
+        
         finished = False
         while not finished:
             finished = True
@@ -279,6 +279,14 @@ class MinesweeperAI():
                         sentence.mark_safe(move)
                     for mine in self.mines:
                         sentence.mark_mine(mine) 
+                safe_moves = sentence.known_safes()
+                mines = sentence.known_mines()
+                if safe_moves:
+                    for move in safe_moves:
+                        self.safes.add(move)
+                if mines:
+                    for mine in mines:
+                        self.mines.add(mine)
        
 
     def make_safe_move(self):
