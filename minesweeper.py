@@ -248,7 +248,7 @@ class MinesweeperAI():
         finished = False
         while not finished:
             finished = True
-            
+
             # Check all the knowledge
             for sentence in self.knowledge:
 
@@ -277,16 +277,17 @@ class MinesweeperAI():
                                     while need_checking:
                                         need_checking = False
                                        
+                                        # TODO: Maybe will be better if I create an empty knowledge append to it new senteces and then replace the original
                                         for sentence in self.knowledge:
                                             safe_moves = sentence.known_safes()
                                             mines = sentence.known_mines()
-                                            if safe_moves or mines:
-                                                need_checking = True
-                                            if safe_moves:
+                                            if safe_moves and safe_moves not in self.safes:
                                                 for move in safe_moves:
+                                                    need_checking = True
                                                     self.safes.add(move)
-                                            if mines:
+                                            if mines and mines not in self.mines:
                                                 for mine in mines:
+                                                    need_checking = True
                                                     self.mines.add(mine)
                                 
                                         for sentence in self.knowledge:
@@ -295,6 +296,18 @@ class MinesweeperAI():
                                                 sentence.mark_safe(move)
                                             for mine in self.mines:
                                                 sentence.mark_mine(mine)        
+                                        
+                                         for sentence in self.knowledge:
+                                            safe_moves = sentence.known_safes()
+                                            mines = sentence.known_mines()
+                                            if safe_moves and safe_moves not in self.safes:
+                                                for move in safe_moves:
+                                                    need_checking = True
+                                                    self.safes.add(move)
+                                            if mines and mines not in self.mines:
+                                                for mine in mines:
+                                                    need_checking = True
+                                                    self.mines.add(mine)
 
 
               
