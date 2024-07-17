@@ -262,31 +262,23 @@ class MinesweeperAI():
                                     finished = False
                                     count = sentence.count - other_sentence.count
                                     new_sentence = Sentence(new_cells, count)
-                                    self.knowledge.append(new_sentence)
-                for sentence in self.knowledge:
-                    safe_moves = sentence.known_safes()
-                    mines = sentence.known_mines()
-                    if safe_moves:
-                        for move in safe_moves:
-                            self.safes.add(move)
-                    if mines:
-                        for mine in mines:
-                            self.mines.add(mine)
-            
-                for sentence in self.knowledge:
-                
-                    for move in self.safes:
-                        sentence.mark_safe(move)
-                    for mine in self.mines:
-                        sentence.mark_mine(mine) 
-                safe_moves = sentence.known_safes()
-                mines = sentence.known_mines()
-                if safe_moves:
-                    for move in safe_moves:
-                        self.safes.add(move)
-                if mines:
-                    for mine in mines:
-                        self.mines.add(mine)
+                                    need_checking = True
+                                    while need_checking:
+                                        need_checking = False
+                                        safe_moves = new_sentence.known_safes()
+                                        mines = new_sentence.known_mines()
+                                        if safe_moves or mines:
+                                            need_checking = True
+                                        if safe_moves:
+                                            for move in safe_moves:
+                                                self.safes.add(move)
+                                                new_sentence.mark_safe(move)
+                                        if mines:
+                                            for mine in mines:
+                                                self.mines.add(mine)
+                                                new_sentence.mark_mine(mine)
+                                        self.knowledge.append(new_sentence)
+              
        
 
     def make_safe_move(self):
