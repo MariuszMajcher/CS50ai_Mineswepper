@@ -244,40 +244,59 @@ class MinesweeperAI():
               if sentence.cells == set():
                     self.knowledge.remove(sentence)  
 
-        
+        # This way does not guarantee discovery of every possible infered information, need to check why
         finished = False
         while not finished:
             finished = True
+            
+            # Check all the knowledge
             for sentence in self.knowledge:
 
+                # Proceed only if the knowledge isnt empty
                 if sentence.cells != set():
                     for other_sentence in self.knowledge:
-                
+
+                        # Proceed only if two knowledges are different
                         if sentence != other_sentence:
+
+                            # Proceed only if the other sentence is completely within first sentence
                             if sentence.cells.issubset(other_sentence.cells):
                                 print(sentence.cells)
                                 new_cells= sentence.cells - other_sentence.cells
-                                all_cells = [item.cells for item in self.knowledge  ]
+                                all_cells = [item.cells for item in self.knowledge]
+
+                                # Proceed only if the new cells are not already in knowledge, then add sentence to knowledge, and check again
                                 if new_cells not in all_cells:
                                     finished = False
                                     count = sentence.count - other_sentence.count
                                     new_sentence = Sentence(new_cells, count)
+                                    self.knowledge.append(new_sentence)
                                     need_checking = True
+
+                                    # Keep on checking till not change has been made, if anything changed rerun again
                                     while need_checking:
                                         need_checking = False
-                                        safe_moves = new_sentence.known_safes()
-                                        mines = new_sentence.known_mines()
-                                        if safe_moves or mines:
-                                            need_checking = True
-                                        if safe_moves:
-                                            for move in safe_moves:
-                                                self.safes.add(move)
-                                                new_sentence.mark_safe(move)
-                                        if mines:
-                                            for mine in mines:
-                                                self.mines.add(mine)
-                                                new_sentence.mark_mine(mine)
-                                        self.knowledge.append(new_sentence)
+                                       
+                                        for sentence in self.knowledge:
+                                            safe_moves = sentence.known_safes()
+                                            mines = sentence.known_mines()
+                                            if safe_moves or mines:
+                                                need_checking = True
+                                            if safe_moves:
+                                                for move in safe_moves:
+                                                    self.safes.add(move)
+                                            if mines:
+                                                for mine in mines:
+                                                    self.mines.add(mine)
+                                
+                                        for sentence in self.knowledge:
+                                        
+                                            for move in self.safes:
+                                                sentence.mark_safe(move)
+                                            for mine in self.mines:
+                                                sentence.mark_mine(mine)        
+
+
               
        
 
