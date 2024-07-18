@@ -117,7 +117,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        if self.count == 0:
+        if self.count <= 0:
             return self.cells
         else:
             return set()
@@ -200,6 +200,7 @@ class MinesweeperAI():
         """
         self.moves_made.add(cell)
         self.mark_safe(cell)
+
         cells = set()
         for i in range(cell[0] - 1, cell[0] + 2):
             for j in range(cell[1] - 1, cell[1] + 2):
@@ -211,75 +212,51 @@ class MinesweeperAI():
                 # Update count if cell in bounds and is mine
                 if 0 <= i < self.height and 0 <= j < self.width:
                     cells.add((i,j))
-        # How to create a difference of the sentences, 
-        # Dont want to create to many, and not repeating 
-        print("new iteration")
+        
         self.knowledge.append(Sentence(cells, count))
        
-        for se in self.knowledge:
+        
+         # Mark additional cells as safe or mines
+        def update_knowledge_base():
+            for sentence in self.knowledge:
+                safe_moves = sentence.known_safes()
+                mines = sentence.known_mines()
+                if safe_moves:
+                    for move in safe_moves:
+                        self.mark_safe(move)
+                if mines:
+                    for mine in mines:
+                        self.mark_mine(mine)
+        
+        update_knowledge_base()
 
-            print(se)
-        print("safes")
-        print(self.safes)
-        print("mines")
-        print(self.mines)
-        for sentence in self.knowledge:
-            safe_moves = sentence.known_safes()
-            mines = sentence.known_mines()
-            if safe_moves:
-                for move in safe_moves:
-                    self.safes.add(move)
-            if mines:
-                for mine in mines:
-                    self.mines.add(mine)
-       
-        for sentence in self.knowledge:
-           
-            for move in self.safes:
-                sentence.mark_safe(move)
-            for mine in self.mines:
-                sentence.mark_mine(mine)        
+        # Remove empty sentences
+        self.knowledge = [sentence for sentence in self.knowledge if sentence.cells]
 
-        for sentence in self.knowledge:
-              if sentence.cells == set():
-                    self.knowledge.remove(sentence)  
-
-        # Would be good to create a while loop that will keep running till there is no new inference to be made, question is how to make it so it will not be infinite
+        # Infer new sentences
         finished = False
         while not finished:
             finished = True
+            new_knowledge = []
             for sentence in self.knowledge:
-
-                if sentence.cells != set():
+                if sentence.cells:
                     for other_sentence in self.knowledge:
-                
-                        if sentence != other_sentence:
-                            if sentence.cells.issubset(other_sentence.cells):
-                                print(sentence.cells)
-                                new_cells= sentence.cells - other_sentence.cells
-                                all_cells = [item.cells for item in self.knowledge  ]
-                                if new_cells not in all_cells:
-                                    finished = False
-                                    count = sentence.count - other_sentence.count
-                                    new_sentence = Sentence(new_cells, count)
-                                    self.knowledge.append(new_sentence)
-                for sentence in self.knowledge:
-                    safe_moves = sentence.known_safes()
-                    mines = sentence.known_mines()
-                    if safe_moves:
-                        for move in safe_moves:
-                            self.safes.add(move)
-                    if mines:
-                        for mine in mines:
-                            self.mines.add(mine)
-            
-                for sentence in self.knowledge:
-                
-                    for move in self.safes:
-                        sentence.mark_safe(move)
-                    for mine in self.mines:
-                        sentence.mark_mine(mine) 
-       
+                        if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
+                            new_cells = other_sentence.cells - sentence.cells
+                            new_count = other_sentence.count - sentence.count
+                            new_sentence = Sentence(new_cells, new_count)
+                            if new_sentence not in self.knowledge and new_sentence not in new_knowledge:
+                                new_knowledge.append(new_sentence)
+                                finished = False
+
+            self.knowledge.extend(new_knowledge)
+            update_knowledge_base()
+
+            # Remove empty sentences again
+            self.knowledge = [sentence for sentence in self.knowledge if sentence.cells]
+
+        # Final pass to mark any additional cells as safe or mines
+        update_knowledge_base()
 
     def make_safe_move(self):
         """

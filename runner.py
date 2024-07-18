@@ -4,9 +4,9 @@ import time
 
 from minesweeper import Minesweeper, MinesweeperAI
 
-HEIGHT = 30
-WIDTH = 30
-MINES = 150
+HEIGHT = 8
+WIDTH = 8
+MINES = 8
 
 # Colors
 BLACK = (0, 0, 0)
@@ -15,14 +15,14 @@ WHITE = (255, 255, 255)
 
 # Create game
 pygame.init()
-size = width, height = 1200, 800
+size = width, height = 600, 400
 screen = pygame.display.set_mode(size)
 
 # Fonts
 OPEN_SANS = "assets/fonts/OpenSans-Regular.ttf"
-smallFont = pygame.font.Font(OPEN_SANS, 16)
-mediumFont = pygame.font.Font(OPEN_SANS, 24)
-largeFont = pygame.font.Font(OPEN_SANS, 35)
+smallFont = pygame.font.Font(OPEN_SANS, 20)
+mediumFont = pygame.font.Font(OPEN_SANS, 28)
+largeFont = pygame.font.Font(OPEN_SANS, 40)
 
 # Compute board size
 BOARD_PADDING = 20
