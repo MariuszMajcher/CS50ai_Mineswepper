@@ -215,48 +215,56 @@ class MinesweeperAI():
         
         self.knowledge.append(Sentence(cells, count))
        
-        
-         # Mark additional cells as safe or mines
-        def update_knowledge_base():
+        def update_knowledge():
+            
             for sentence in self.knowledge:
                 safe_moves = sentence.known_safes()
                 mines = sentence.known_mines()
                 if safe_moves:
                     for move in safe_moves:
-                        self.mark_safe(move)
+                        self.safes.add(move)
                 if mines:
                     for mine in mines:
-                        self.mark_mine(mine)
+                        self.mines.add(mine)
         
-        update_knowledge_base()
+            for sentence in self.knowledge:
+            
+                for move in self.safes:
+                    sentence.mark_safe(move)
+                for mine in self.mines:
+                    sentence.mark_mine(mine)        
 
-        # Remove empty sentences
-        self.knowledge = [sentence for sentence in self.knowledge if sentence.cells]
+            for sentence in self.knowledge:
+                if sentence.cells == set():
+                        self.knowledge.remove(sentence)  
 
-        # Infer new sentences
+
+
+        # TODO: Ok I think I understand what is going on, there is a missing part of the logic, when the count drops to zero it is not added to the knowledge? Can`t see any sentences equaling zero
+        # And again, what would that mean if I add new sentence with zero, would that automaticaly add to safes?
+        # Update, ok it does infer zeroes, but not efficiently, it does not seem to see all of them... Maybe it doesn`t because the actual sentece already comes to zero, and no new sentence will be created`
+
+
+
+        # Will run till no new connection found
         finished = False
         while not finished:
-            finished = True
-            new_knowledge = []
+           
             for sentence in self.knowledge:
-                if sentence.cells:
+                    finished = True
                     for other_sentence in self.knowledge:
-                        if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
-                            new_cells = other_sentence.cells - sentence.cells
-                            new_count = other_sentence.count - sentence.count
-                            new_sentence = Sentence(new_cells, new_count)
-                            if new_sentence not in self.knowledge and new_sentence not in new_knowledge:
-                                new_knowledge.append(new_sentence)
-                                finished = False
-
-            self.knowledge.extend(new_knowledge)
-            update_knowledge_base()
-
-            # Remove empty sentences again
-            self.knowledge = [sentence for sentence in self.knowledge if sentence.cells]
-
-        # Final pass to mark any additional cells as safe or mines
-        update_knowledge_base()
+                        if sentence.cells != set() and other_sentence.cells != set():
+                            if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
+                                print(sentence.cells , "--->" , sentence.count)
+                                new_cells= sentence.cells - other_sentence.cells
+                                all_cells = [item.cells for item in self.knowledge  ]
+                                if new_cells not in all_cells:
+                                    finished = False
+                                    count = sentence.count - other_sentence.count
+                                    new_sentence = Sentence(new_cells, count)
+                                    self.knowledge.append(new_sentence)
+            update_knowledge()
+    
 
     def make_safe_move(self):
         """
