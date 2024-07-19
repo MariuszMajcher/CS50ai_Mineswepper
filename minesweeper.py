@@ -210,6 +210,17 @@ class MinesweeperAI():
 
         self.knowledge.append(Sentence(cells, count, cell))
 
+        def remove_duplicates():
+            seen = set()
+            def unique_filter(sentence):
+                cell_frozen = frozenset(sentence.cells)
+                if cell_frozen in seen:
+                    return False
+                seen.add(cell_frozen)
+                return True
+
+            self.knowledge = list(filter(unique_filter, self.knowledge))
+
         def update_knowledge():
             for sentence in self.knowledge:
                 safe_moves = sentence.known_safes()
@@ -228,7 +239,8 @@ class MinesweeperAI():
                     sentence.mark_mine(mine)
 
             self.knowledge = [s for s in self.knowledge if s.cells]
-
+            remove_duplicates()
+  
         update_knowledge()
 
         finished = False
@@ -242,7 +254,7 @@ class MinesweeperAI():
                         count_diff = other_sentence.count - sentence.count
                         if new_cells and all(new_cells != s.cells for s in self.knowledge):
                             print("New Sentence Inferred")
-                            print(f"\033[94m {sentence.mc} ---> \033[0m",sentence.cells , "--->" , sentence.count)
+                            print(f"\033[94m {sentence.mc} ---> \033[0m",sentence.cells , "--->" , sentence.count, f"\033[98m <--- {other_sentence.mc}  \033[0m")
                             new_knowledge.append(Sentence(new_cells, count_diff, sentence.mc))
                             finished = False
             self.knowledge.extend(new_knowledge)
