@@ -239,8 +239,10 @@ class MinesweeperAI():
                         self.knowledge.remove(sentence)  
 
 
-
+        # TODO: Ok so it looks like not all the sentences are giving the correct result, I think at some point some of them get removed without any safes/mines being added
         # TODO: It looks like the sentence with zero still stays, after the run, then it will be removed on next run, but on first run it will be marked as safe/mine
+
+        # Might be only the ones that are in the corner
         print(" ")
         print("____________________________")
         print("New run and these are all the sentences")
