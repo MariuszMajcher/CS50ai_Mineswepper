@@ -272,7 +272,7 @@ class MinesweeperAI():
                                     count = sentence.count - other_sentence.count
                                     new_sentence = Sentence(new_cells, count, sentence.mc)
                                     self.knowledge.append(new_sentence)
-                            update_knowledge()
+                                    update_knowledge()
          
     
 
