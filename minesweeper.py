@@ -100,7 +100,7 @@ class Sentence():
         return self.cells == other.cells and self.count == other.count
     
     def __str__(self):
-        return f"\033[90m {self.mc} ---> \033[0m {self.cells} = {self.count}"
+        return f"\033[92m {self.mc} --> \033[0m{self.cells} = {self.count}"
     
     def known_mines(self):
         """
@@ -117,7 +117,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        if self.count <= 0:
+        if self.count == 0:
             return self.cells
         else:
             return set()
@@ -182,7 +182,6 @@ class MinesweeperAI():
         for sentence in self.knowledge:
             sentence.mark_safe(cell)
 
-
     def add_knowledge(self, cell, count):
         """
         Called when the Minesweeper board tells us, for a given
@@ -192,11 +191,11 @@ class MinesweeperAI():
             1) mark the cell as a move that has been made
             2) mark the cell as safe
             3) add a new sentence to the AI's knowledge base
-               based on the value of `cell` and `count`
+            based on the value of `cell` and `count`
             4) mark any additional cells as safe or as mines
-               if it can be concluded based on the AI's knowledge base
+            if it can be concluded based on the AI's knowledge base
             5) add any new sentences to the AI's knowledge base
-               if they can be inferred from existing knowledge
+            if they can be inferred from existing knowledge
         """
         self.moves_made.add(cell)
         self.mark_safe(cell)
@@ -204,19 +203,14 @@ class MinesweeperAI():
         cells = set()
         for i in range(cell[0] - 1, cell[0] + 2):
             for j in range(cell[1] - 1, cell[1] + 2):
-
-                # Ignore the cell itself
                 if (i, j) == cell:
                     continue
-
-                # Update count if cell in bounds and is mine
                 if 0 <= i < self.height and 0 <= j < self.width:
-                    cells.add((i,j))
-        
+                    cells.add((i, j))
+
         self.knowledge.append(Sentence(cells, count, cell))
-       
+
         def update_knowledge():
-            
             for sentence in self.knowledge:
                 safe_moves = sentence.known_safes()
                 mines = sentence.known_mines()
@@ -226,55 +220,40 @@ class MinesweeperAI():
                 if mines:
                     for mine in mines:
                         self.mines.add(mine)
-        
+
             for sentence in self.knowledge:
-            
                 for move in self.safes:
                     sentence.mark_safe(move)
                 for mine in self.mines:
-                    sentence.mark_mine(mine)        
+                    sentence.mark_mine(mine)
 
-            for sentence in self.knowledge:
-                if sentence.cells == set():
-                        self.knowledge.remove(sentence)  
-        print("Checking when does it do extra move!")
+            self.knowledge = [s for s in self.knowledge if s.cells]
+
         update_knowledge()
-        # TODO: Ok so it looks like not all the sentences are giving the correct result, I think at some point some of them get removed without any safes/mines being added
-        # TODO: It looks like the sentence with zero still stays, after the run, then it will be removed on next run, but on first run it will be marked as safe/mine
 
-        # Might be only the ones that are in the corner
-        print(" ")
-        print("____________________________")
-        print("New run and these are all the sentences")
+        finished = False
+        while not finished:
+            finished = True
+            new_knowledge = []
+            for sentence in self.knowledge:
+                for other_sentence in self.knowledge:
+                    if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
+                        new_cells = other_sentence.cells - sentence.cells
+                        count_diff = other_sentence.count - sentence.count
+                        if new_cells and all(new_cells != s.cells for s in self.knowledge):
+                            print("New Sentence Inferred")
+                            print(f"\033[94m {sentence.mc} ---> \033[0m",sentence.cells , "--->" , sentence.count)
+                            new_knowledge.append(Sentence(new_cells, count_diff, sentence.mc))
+                            finished = False
+            self.knowledge.extend(new_knowledge)
+            update_knowledge()
+
+        # Debugging output
+        print("New run and these are all the sentences:")
         for s in self.knowledge:
             print(s)
-        print("Mines: ")
-        print(self.mines)
-        print("Safes: ")
-        print(self.safes)
-        # Will run till no new connection found
-        finished = False
-        # Ok so as of now it will not recuringly add new sentences, this is the plan to keep on adding new inferences till there is no more
-        while not finished:
-            for sentence in self.knowledge:
-                    finished = True
-                    for other_sentence in self.knowledge:
-                        if sentence.cells != set() and other_sentence.cells != set():
-                            if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
-                                # Currently that is adding same sentece and infinite loop
-                                new_cells= sentence.cells - other_sentence.cells
-                                all_cells = [item.cells for item in self.knowledge  ]
-                               
-                                if new_cells not in all_cells:
-                                    finished = False
-                                    print("New Sentence Inferred")
-                                    print(f"\033[94m {sentence.mc} ---> \033[0m",sentence.cells , "--->" , sentence.count)
-                                    count = sentence.count - other_sentence.count
-                                    new_sentence = Sentence(new_cells, count, sentence.mc)
-                                    self.knowledge.append(new_sentence)
-                                    update_knowledge()
-         
-    
+        print("Mines: ", self.mines)
+        print("Safes: ", self.safes)
 
     def make_safe_move(self):
         """
@@ -307,9 +286,8 @@ class MinesweeperAI():
             for j in range(self.height):
                 board.add((i,j))
         not_mine = (board - self.mines - self.moves_made)
-        if len(not_mine) > 0:
-            choice = random.choice(list(not_mine))
-            if choice:
-                return choice
+        choice = random.choice(list(not_mine))
+        if choice:
+            return choice
         else:
             return None
