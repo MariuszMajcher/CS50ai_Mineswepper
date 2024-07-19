@@ -240,12 +240,16 @@ class MinesweeperAI():
 
 
 
-        # TODO: Ok I think I understand what is going on, there is a missing part of the logic, when the count drops to zero it is not added to the knowledge? Can`t see any sentences equaling zero
-        # And again, what would that mean if I add new sentence with zero, would that automaticaly add to safes?
-        # Update, ok it does infer zeroes, but not efficiently, it does not seem to see all of them... Maybe it doesn`t because the actual sentece already comes to zero, and no new sentence will be created`
-
-
-
+        # TODO: It looks like the sentence with zero still stays, after the run, then it will be removed on next run, but on first run it will be marked as safe/mine
+        print(" ")
+        print("____________________________")
+        print("New run and these are all the sentences")
+        for s in self.knowledge:
+            print(s)
+        print("Mines: ")
+        print(self.mines)
+        print("Safes: ")
+        print(self.safes)
         # Will run till no new connection found
         finished = False
         while not finished:
@@ -255,6 +259,7 @@ class MinesweeperAI():
                     for other_sentence in self.knowledge:
                         if sentence.cells != set() and other_sentence.cells != set():
                             if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
+                                print("New Sentence Inferred")
                                 print(sentence.cells , "--->" , sentence.count)
                                 new_cells= sentence.cells - other_sentence.cells
                                 all_cells = [item.cells for item in self.knowledge  ]
