@@ -247,6 +247,7 @@ class MinesweeperAI():
         while not finished:
             finished = True
             new_knowledge = []
+            
             for sentence in self.knowledge:
                 for other_sentence in self.knowledge:
                     if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
@@ -259,6 +260,11 @@ class MinesweeperAI():
                             print(f"Infered: \033[94m {sentence.mc} ---> \033[0m",new_cells , "--->" , count_diff, f"\033[98m <--- {other_sentence.mc}  \033[0m")
                             new_knowledge.append(Sentence(new_cells, count_diff, sentence.mc))
                             finished = False
+                # I could create a intersection of each two, if the len minus count... what, there definetly is a way to trigger it
+                # how to do it  
+                for other_sentence in self.knowledge:
+                    if sentence != other_sentence and (len(sentence.cells) - sentence.count) >= other_sentence.count:
+                        new_cells =  
             self.knowledge.extend(new_knowledge)
             update_knowledge()
 
