@@ -252,15 +252,20 @@ class MinesweeperAI():
                     if sentence != other_sentence and sentence.cells.issubset(other_sentence.cells):
                         new_cells = other_sentence.cells - sentence.cells
                         count_diff = other_sentence.count - sentence.count
+                        # Ok I see, it does not infer certain sentences, if that sentence is same as the one that generates from different cell
+                        # 
                         if new_cells and all(new_cells != s.cells for s in self.knowledge):
-                            print("New Sentence Inferred")
-                            print(f"\033[94m {sentence.mc} ---> \033[0m",sentence.cells , "--->" , sentence.count, f"\033[98m <--- {other_sentence.mc}  \033[0m")
+                           
+                            print(f"Infered: \033[94m {sentence.mc} ---> \033[0m",new_cells , "--->" , count_diff, f"\033[98m <--- {other_sentence.mc}  \033[0m")
                             new_knowledge.append(Sentence(new_cells, count_diff, sentence.mc))
                             finished = False
             self.knowledge.extend(new_knowledge)
             update_knowledge()
 
         # Debugging output
+
+
+        print("------------------------------------")
         print("New run and these are all the sentences:")
         for s in self.knowledge:
             print(s)
@@ -298,8 +303,9 @@ class MinesweeperAI():
             for j in range(self.height):
                 board.add((i,j))
         not_mine = (board - self.mines - self.moves_made)
-        choice = random.choice(list(not_mine))
-        if choice:
-            return choice
+        if len(not_mine) > 0:
+            choice = random.choice(list(not_mine))
+            if choice:
+                return choice
         else:
             return None
