@@ -261,10 +261,11 @@ class MinesweeperAI():
                             new_knowledge.append(Sentence(new_cells, count_diff, sentence.mc))
                             finished = False
                 # I could create a intersection of each two, if the len minus count... what, there definetly is a way to trigger it
-                # how to do it  
-                for other_sentence in self.knowledge:
-                    if sentence != other_sentence and (len(sentence.cells) - sentence.count) >= other_sentence.count:
-                        new_cells =  
+                # # how to do it  
+                # for other_sentence in self.knowledge:
+                #     if sentence != other_sentence:
+                #         common_cells = sentence.cells.intersection(other_sentence.cells)
+
             self.knowledge.extend(new_knowledge)
             update_knowledge()
 

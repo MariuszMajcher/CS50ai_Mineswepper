@@ -9,9 +9,9 @@ WIDTH = 8
 MINES = 12
 
 # Colors
-BLACK = (0, 0, 0)
-GRAY = (180, 180, 180)
-WHITE = (255, 255, 255)
+BLACK = (0, 0, 90)
+GRAY = (45, 180, 180)
+WHITE = (255, 89, 255)
 
 # Create game
 pygame.init()
