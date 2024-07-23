@@ -262,9 +262,15 @@ class MinesweeperAI():
                             finished = False
                 # I could create a intersection of each two, if the len minus count... what, there definetly is a way to trigger it
                 # # how to do it  
-                # for other_sentence in self.knowledge:
-                #     if sentence != other_sentence:
-                #         common_cells = sentence.cells.intersection(other_sentence.cells)
+                for other_sentence in self.knowledge:
+                    if sentence != other_sentence:
+                        common_cells = sentence.cells.intersection(other_sentence.cells)
+                        if common_cells == 3:
+                            if len(sentence.cells) - sentence.count == 1 and other_sentence.count == 2:
+                                mine = sentence.cells - other_sentence.cells
+                                safe = other_sentence.cells - sentence.cells
+                                self.mines.add(mine)
+                                self.safes.add(safe)
 
             self.knowledge.extend(new_knowledge)
             update_knowledge()
